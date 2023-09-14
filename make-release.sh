@@ -117,12 +117,15 @@ tag_message="$tag_message $new_target_version"
 echo "Creating new release version of '$new_version' with tag '$new_tag' and message '$tag_message'..."
 
 library_properties="library.properties"
-temporary_library_properties=$(mktemp)
-sed "s/^version=.*$/version=$new_version/" "$library_properties" > "$temporary_library_properties"
-cat $temporary_library_properties > "$library_properties"
-rm "$temporary_library_properties"
-git add "$library_properties"
-git commit -m "$tag_message"
+if [ -f "$library_properties" ]; then
+    temporary_library_properties=$(mktemp)
+    sed "s/^version=.*$/version=$new_version/" "$library_properties" > "$temporary_library_properties"
+    cat $temporary_library_properties > "$library_properties"
+    rm "$temporary_library_properties"
+    git add "$library_properties"
+    git commit -m "$tag_message"
+fi
+
 git tag -a "$new_tag" -m "$tag_message"
 
 if command -v './post-release.sh' &> /dev/null; then
