@@ -102,17 +102,7 @@ void test_serial() {
 }
 ```
 
-## Compiling Tests
-
-### Native Compilation (Development)
-
-During development, you can compile tests natively using your system compiler:
-
-```bash
-cd mylib/test
-clang++ -std=c++17 -I../../yatest/src -I../src test.cpp ../../yatest/src/Arduino.cpp -o test
-./test
-```
+## Recommended Integration into Library Projects
 
 ## Project Structure
 
@@ -123,13 +113,22 @@ mylib/
 ├── src/
 │   ├── mylib.h
 │   └── mylib/
+│       ├── MyClass.h
 │       └── MyClass.cpp
 ├── test/
-│   ├── test.ino          # Main test entry point
-│   ├── test_Feature.cpp  # Individual test files
+│   ├── tests.cpp         # Main test entry point
+│   └── test_Feature.cpp  # Individual test files
 ├── library.properties
 └── README.md
 ```
+
+## Compiling and Running Tests
+
+Copy and paste the `yatest.sh` script from the `extras` directory to the root of your library and execute it.
+
+The script will take care of setting up a local build directory, make the arduino-cli use this for installing libraries, install the lastest yatest release into this and then run the `build-and-run.sh` from yatest for your library. This will also make sure that any dependencies mentioned in your `library.properties` are automatically installed and added to the compiler include paths and build arguments (for any .cpp files).
+
+The `yatest.sh` can be added and checked in with your library and should not require any further modification.
 
 ## Limitations
 
