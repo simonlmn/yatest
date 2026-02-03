@@ -62,6 +62,32 @@ int main() {
 }
 ```
 
+### Writing and Running Tests using TestSuite and TestRunner
+
+Create a tests.cpp in your library's `test/` directory:
+
+```cpp
+#include <yatest.h>
+#include <Arduino.h>
+#include <MyLibrary.h>
+
+namespace {
+  // Define as many (or few) test suites as needed
+  static const yatest::TestSuite& TestMyLibrary =
+    yatest::suite("My Library")
+        .tests("calling someFunction", []() {
+          yatest::expect(someFunction() == 42, "some function should return 42");
+        })
+        /* chain more .tests(...) calls as needed to define more test cases */;
+}
+
+int main() {
+  return yatest::run();
+}
+```
+
+The anonymous namespace containing the test suite and test case definitions can also be moved to a separate source file. When building the tests (see below) these will automatically be picked up and run by the test runner.
+
 ### Arduino Mocks
 
 The library provides comprehensive Arduino API mocks that allow your code to compile and run natively:
