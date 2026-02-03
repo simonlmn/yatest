@@ -5,6 +5,7 @@
 #include "../Arduino.h"
 #include "../WString.h"
 #include "../Stream.h"
+#include "../Print.h"
 
 // Additional helper functions for time advancement
 inline void advanceTimeMs(unsigned long millis_delta) {
