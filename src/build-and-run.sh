@@ -73,7 +73,13 @@ echo "Building tests..."
 echo $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $YATEST_MAIN_SOURCE $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o $output
 if $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $YATEST_MAIN_SOURCE $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o "$output"; then
     echo "Running tests..."
-    if "$output"; then
+    if [ -n "$YATEST_COLOR" ]; then
+        if YATEST_COLOR="$YATEST_COLOR" "$output"; then
+            echo "✓ tests passed"
+        else
+            echo "✗ tests failed"
+        fi
+    elif "$output"; then
         echo "✓ tests passed"
     else
         echo "✗ tests failed"
