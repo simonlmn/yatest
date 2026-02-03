@@ -54,9 +54,15 @@ CXXFLAGS="-std=c++17 -g -Wall -Wextra"
 INCLUDES="-I$YATEST_SRC_DIR -I$SRC_DIR -I$TEST_DIR $DEPS_INCLUDES"
 
 # Source files
-YATEST_SOURCES=$(find "$YATEST_SRC_DIR" -name "*.cpp" 2>/dev/null || true)
+YATEST_SOURCES=$(find "$YATEST_SRC_DIR" -name "*.cpp" -not -name 'main.cpp' 2>/dev/null || true)
 LIB_SOURCES=$(find "$SRC_DIR" -name "*.cpp" 2>/dev/null || true)
-TEST_SOURCES=$(find "$TEST_DIR" -name "*.cpp" 2>/dev/null)
+TEST_SOURCES=$(find "$TEST_DIR" -name "*.cpp" 2>/dev/null || true)
+
+# Use main.cpp from yatest if no main() is defined in test sources
+YATEST_MAIN_SOURCE=
+if ! grep --recursive --silent --extended-regexp '^\s*int\s+main\s*\(' "$TEST_DIR" 2>/dev/null; then
+    YATEST_MAIN_SOURCE="$YATEST_SRC_DIR/main.cpp"
+fi
 
 # Compile and run tests
 mkdir -p "$BUILD_DIR"
@@ -64,8 +70,8 @@ mkdir -p "$BUILD_DIR"
 output="$BUILD_DIR/tests"
 
 echo "Building tests..."
-echo $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o $output
-if $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o "$output"; then
+echo $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $YATEST_MAIN_SOURCE $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o $output
+if $CXX $CXXFLAGS $INCLUDES $YATEST_SOURCES $YATEST_MAIN_SOURCE $DEPS_SOURCES $LIB_SOURCES $TEST_SOURCES -o "$output"; then
     echo "Running tests..."
     if "$output"; then
         echo "✓ tests passed"
