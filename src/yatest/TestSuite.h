@@ -78,9 +78,9 @@ public:
   }
 };
 
-std::vector<std::unique_ptr<ITestSuite>> TestSuites = {};
+inline std::vector<std::unique_ptr<ITestSuite>> TestSuites = {};
 
-TestSuite& suite(const char* name) {
+inline TestSuite& suite(const char* name) {
   return *static_cast<TestSuite*>(TestSuites.emplace_back(std::make_unique<TestSuite>(name)).get());
 }
 

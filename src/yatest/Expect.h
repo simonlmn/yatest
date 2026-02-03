@@ -9,7 +9,7 @@ struct ExpectationFailed final : public std::logic_error {
   using logic_error::logic_error;
 };
 
-void expect(bool expectation, const char* what) { if (!expectation) throw ExpectationFailed(what); }
+inline void expect(bool expectation, const char* what) { if (!expectation) throw ExpectationFailed(what); }
 
 }
 
