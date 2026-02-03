@@ -120,7 +120,7 @@ namespace {
   static const yatest::TestSuite& TestMyLibrary =
     yatest::suite("My Library")
         .tests("calling someFunction", []() {
-          yatest::expect(someFunction() == 42, "some function should return 42");
+          yatest::expect::that(someFunction() == 42, "some function should return 42");
         })
         /* chain more .tests(...) calls as needed to define more test cases */;
 }

@@ -6,5 +6,5 @@
 static const yatest::TestSuite& ExampleTestSuite =
 yatest::suite("Example")
   .tests("simple arithmetic", [] () {
-    yatest::expect(1 + 1 == 2, "1 + 2 should equal 2");
+    yatest::expect::that(1 + 1 == 2, "1 + 2 should equal 2");
   });
