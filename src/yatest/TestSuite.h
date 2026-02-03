@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <chrono>
 
 namespace yatest {
 
@@ -17,26 +18,31 @@ struct TestResult final {
   const char* name;
   TestStatus status;
   std::string what;
+  double durationMicros;
 
-  TestResult(const char* name, TestStatus status, std::string what) : name(name), status(status), what(what) {}
+  TestResult(const char* name, TestStatus status, std::string what, double durationMicros)
+      : name(name), status(status), what(what), durationMicros(durationMicros) {}
 };
 
 class TestSuiteResult final {
   std::vector<TestResult> _testResults {};
+  double _durationMicros = 0.0;
 
 public:
   const std::vector<TestResult>& testResults() const { return _testResults; }
+  double durationMicros() const { return _durationMicros; }
+  void setDurationMicros(double durationMicros) { _durationMicros = durationMicros; }
 
-  void passed(const char* name) {
-    _testResults.emplace_back(name, TestStatus::Passed, "");
+  void passed(const char* name, double durationMicros) {
+    _testResults.emplace_back(name, TestStatus::Passed, "", durationMicros);
   }
 
-  void failed(const char* name) {
-    failed(name, "");
+  void failed(const char* name, double durationMicros) {
+    failed(name, "", durationMicros);
   }
 
-  void failed(const char* name, const char* what) {
-    _testResults.emplace_back(name, TestStatus::Failed, what);
+  void failed(const char* name, const char* what, double durationMicros) {
+    _testResults.emplace_back(name, TestStatus::Failed, what, durationMicros);
   }
 };
 
@@ -63,17 +69,27 @@ public:
   }
 
   TestSuiteResult run() override {
+    using Clock = std::chrono::steady_clock;
+    using DurationMicros = std::chrono::duration<double, std::micro>;
+
     TestSuiteResult result;
+    auto suiteStart = Clock::now();
     for (auto [name, test] : _tests) {
+      auto testStart = Clock::now();
       try {
         test();
-        result.passed(name);
+        auto testEnd = Clock::now();
+        result.passed(name, DurationMicros(testEnd - testStart).count());
       } catch (std::exception& e) {
-        result.failed(name, e.what());
+        auto testEnd = Clock::now();
+        result.failed(name, e.what(), DurationMicros(testEnd - testStart).count());
       } catch (...) {
-        result.failed(name);
+        auto testEnd = Clock::now();
+        result.failed(name, DurationMicros(testEnd - testStart).count());
       }
     }
+    auto suiteEnd = Clock::now();
+    result.setDurationMicros(DurationMicros(suiteEnd - suiteStart).count());
     return result;
   }
 };
