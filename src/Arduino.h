@@ -202,8 +202,8 @@ inline char* ultoa(unsigned long value, char* result, int base) {
 
 inline char* dtostrf(double val, signed char width, unsigned char prec, char* sout) {
     char fmt[20];
-    sprintf(fmt, "%%%d.%df", width, prec);
-    sprintf(sout, fmt, val);
+    snprintf(fmt, sizeof(fmt), "%%%d.%df", width, prec);
+    snprintf(sout, 32, fmt, val);
     return sout;
 }
 
@@ -305,8 +305,8 @@ public:
     size_t availableForWrite() { return txBuffer.availableForWrite(); }
     size_t readBytes(uint8_t* buffer, size_t length) { return rxBuffer.readBytes(buffer, length); }
     size_t write(const uint8_t* buffer, size_t length) { return txBuffer.write(buffer, length); }
-    void begin(unsigned long baud, int config) {}
-    void setTimeout(unsigned long timeout) {}
+    void begin(unsigned long baud, int config) { (void)baud; (void)config; }
+    void setTimeout(unsigned long timeout) { (void)timeout; }
     void flush() { rxBuffer.flush(); }
     int read() { return rxBuffer.read(); }
 };

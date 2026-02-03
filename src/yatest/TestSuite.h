@@ -74,7 +74,7 @@ public:
         result.failed(name);
       }
     }
-    return std::move(result);
+    return result;
   }
 };
 
