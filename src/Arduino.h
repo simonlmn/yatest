@@ -232,6 +232,26 @@ inline long map(long x, long in_min, long in_max, long out_min, long out_max) {
 inline void interrupts() {}
 inline void noInterrupts() {}
 
+// GPIO functions and constants
+#define NOT_A_PIN -1
+
+void pinMode(int pin, int mode);
+int digitalRead(int pin);
+void digitalWrite(int pin, int value);
+
+// Expose a small mock GPIO backend for tests.
+constexpr std::size_t GPIO_MOCK_MAX_PINS = 64;
+void resetGpioMocks();
+void setDigitalReadValue(int pin, int value);
+int getPinMode(int pin);
+int getLastPinModePin();
+int getLastPinModeMode();
+int getDigitalWriteValue(int pin);
+int getLastDigitalWritePin();
+int getLastDigitalWriteValue();
+std::size_t getDigitalWriteCallCount();
+
+
 // Serial/RingBuffer mocks
 struct RingBuffer {
     uint8_t data[128];
